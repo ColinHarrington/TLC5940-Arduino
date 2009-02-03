@@ -30,7 +30,7 @@
 
 #define	TLC_FADE_BUFFER_LENGTH	24
 
-struct tlc_fade {
+struct Tlc_Fade {
 	TLC_CHANNEL_TYPE channel;
 	int16_t startValue;
 	int16_t changeValue;
@@ -43,14 +43,16 @@ volatile uint8_t tlc_alreadyCheckingFadeBuffer;
 
 //volatile void tlc_fadeBufferCheckCallback(void);
 uint8_t tlc_updateFades(uint32_t currentMillis);
-uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue, int16_t endValue, uint32_t startMillis, uint32_t endMillis);
+uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue,
+				 int16_t endValue, uint32_t startMillis, uint32_t endMillis);
 uint8_t tlc_removeFade(TLC_CHANNEL_TYPE channel);
-void tlc_removeFadeFromBuffer(struct tlc_fade *current, struct tlc_fade **end);
+void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade **end);
 
 /**
  * \addtogroup ExtendedFunctions
  * \code #include "tlc_fades.h" \endcode
- * - tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue, int16_t endValue, uint32_t startMillis, uint32_t endMillis)
+ * - tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue, int16_t endValue,
+ *                            uint32_t startMillis, uint32_t endMillis)
  * - tlc_removeFade(TLC_CHANNEL_TYPE channel)
  */
 /* @{ */
@@ -72,7 +74,7 @@ void tlc_removeFadeFromBuffer(struct tlc_fade *current, struct tlc_fade **end);
 	// disable interrupts so we add at the actual end of the buffer
 	uint8_t oldSREG = SREG;
 	cli();
-	struct tlc_fade p = tlc_fadeBuffer[tlc_fadeBufferSize++];
+	Tlc_Fade p = tlc_fadeBuffer[tlc_fadeBufferSize++];
 	p.channel = channel;
 	p.startValue = startValue;
 	p.changeValue = endValue - startValue;
@@ -83,17 +85,19 @@ void tlc_removeFadeFromBuffer(struct tlc_fade *current, struct tlc_fade **end);
 	tlc_fadeBufferCheckCallback();
 }*/
 
-uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue, int16_t endValue, uint32_t startMillis, uint32_t endMillis)
+uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue,
+				 int16_t endValue, uint32_t startMillis, uint32_t endMillis)
 {
 	if (tlc_fadeBufferSize == TLC_FADE_BUFFER_LENGTH) {
 		return 0; // fade buffer full
 	}
-	struct tlc_fade p = tlc_fadeBuffer[tlc_fadeBufferSize++];
-	p.channel = channel;
-	p.startValue = startValue;
-	p.changeValue = endValue - startValue;
-	p.startMillis = startMillis;
-	p.endMillis = endMillis;
+	tlc_fadeBufferSize++;
+	Tlc_Fade *p = tlc_fadeBuffer + tlc_fadeBufferSize;
+	p->channel = channel;
+	p->startValue = startValue;
+	p->changeValue = endValue - startValue;
+	p->startMillis = startMillis;
+	p->endMillis = endMillis;
 }
 
 /**
@@ -108,8 +112,8 @@ uint8_t tlc_removeFade(TLC_CHANNEL_TYPE channel)
 	uint8_t oldSREG = SREG;
 	cli();
 	uint8_t removed = 0;
-	struct tlc_fade *p = tlc_fadeBuffer;
-	struct tlc_fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
+	Tlc_Fade *p = tlc_fadeBuffer;
+	Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
 	for (; p < end; p++) {
 		if (p->channel == channel) {
 			removed++;
@@ -127,9 +131,9 @@ uint8_t tlc_removeFade(TLC_CHANNEL_TYPE channel)
  * \param current the fade to be removed
  * \param endp the end of the fade buffer (pointer to pointer)
  */
-void tlc_removeFadeFromBuffer(struct tlc_fade *current, struct tlc_fade **endp)
+void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade **endp)
 {
-	struct tlc_fade *end = *endp;
+	Tlc_Fade *end = *endp;
 	if (--end != current) { // if this is not the last fade
 		// TODO: switch to memcpy?
 		current->channel = end->channel;
@@ -149,8 +153,8 @@ void tlc_removeFadeFromBuffer(struct tlc_fade *current, struct tlc_fade **endp)
 	if (tlc_alreadyCheckingFadeBuffer)
 		return;
 	tlc_alreadyCheckingFadeBuffer = 1;
-	struct tlc_fade *p = tlc_fadeBuffer;
-	struct tlc_fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
+	Tlc_Fade *p = tlc_fadeBuffer;
+	Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
 	uint32_t currentMillis = millis();
 	uint8_t needsUpdate = 0;
 	for (; p < end; p++){
@@ -185,8 +189,8 @@ uint8_t tlc_updateFades(uint32_t currentMillis)
 	if (tlc_needXLAT) {
 		return 1;
 	}
-	struct tlc_fade *p = tlc_fadeBuffer;
-	struct tlc_fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
+	Tlc_Fade *p = tlc_fadeBuffer;
+	Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
 	uint8_t needsUpdate = 0;
 	for (; p < end; p++){
 		if (currentMillis >= p->endMillis) { // fade done

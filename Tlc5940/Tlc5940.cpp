@@ -285,7 +285,7 @@ void Tlc5940::setAll(uint16_t value)
  * value correspondes to maximum output current by
  * \f$\displaystyle I_{OUT_n} = I_{max} \times \frac{DCn}{63} \f$
  * where
- * - Imax is the maximum output current determined by the Iref resistor
+ * - \f$\displaystyle I_{max} = \frac{1.24V}{R_{IREF}} \times 31.5 = \frac{39.06}{R_{IREF}} \f$
  * - DCn is the dot correction value for channel n
  *
  * \param value (0-63)
