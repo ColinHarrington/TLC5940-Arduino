@@ -40,6 +40,7 @@ struct Tlc_Fade {
 uint8_t tlc_fadeBufferSize;
 
 uint8_t tlc_updateFades();
+uint8_t tlc_updateFades(uint32_t currentMillis);
 uint8_t tlc_addFade(Tlc_Fade *fade);
 uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue,
                     int16_t endValue, uint32_t startMillis, uint32_t endMillis);
@@ -144,14 +145,19 @@ static void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade *endp)
     tlc_fadeBufferSize--;
 }
 
+/** Updates fades using millis() */
+uint8_t tlc_updateFades()
+{
+    return tlc_updateFades(millis());
+}
+
 /** Updates any running fades.
     \param currentMillis the current millis() time.
     \returns 0 if there are no fades left in the buffer. */
-uint8_t tlc_updateFades()
+uint8_t tlc_updateFades(uint32_t currentMillis)
 {
     Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
     uint8_t needsUpdate = 0;
-    uint32_t currentMillis = millis();
     for (Tlc_Fade *p = tlc_fadeBuffer; p < end; p++){
         if (currentMillis >= p->endMillis) { // fade done
             Tlc.set(p->channel, p->startValue + p->changeValue);
