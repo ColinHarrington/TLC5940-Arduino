@@ -1,10 +1,9 @@
 /*
- * Fades 5 random outputs randomly.
- *
- * See the BasicUse example for hardware setup.
- *
- * Alex Leone <acleone ~AT~ gmail.com>, 2008-11-12
- */
+    Fades 10 random outputs randomly.
+
+    See the BasicUse example for hardware setup.
+
+    Alex Leone <acleone ~AT~ gmail.com>, 2009-02-03 */
 
 #include "Tlc5940.h"
 #include "tlc_fades.h"
