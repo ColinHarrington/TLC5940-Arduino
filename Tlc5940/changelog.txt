@@ -24,7 +24,7 @@
 
 2008-11-11
     - Added tlc_animations.h and examples
-    - Fixed SPI mode - (don't use enums as constants 
+    - Fixed SPI mode - (don't use enums as constants
                         "#if A == 1" doesn't work)
 
 2008-10-31

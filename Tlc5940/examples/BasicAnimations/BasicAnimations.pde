@@ -36,7 +36,7 @@ void loop()
                              uint16_t periodsPerFrame);
       periods per frame is PWM periods, 1.024ms per frame (0 is valid - this
       will play the animation as fast as possible).
-    
+
       Plays an animation in the "background".
       Don't call Tlc.update() while this is running.
       You can check if this is done with !tlc_onUpdateFinished */

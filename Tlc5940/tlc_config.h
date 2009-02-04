@@ -1,5 +1,5 @@
 /*  Copyright (c) 2009 by Alex Leone <acleone ~AT~ gmail.com>
-   
+
     This file is part of the Arduino TLC5940 Library.
 
     The Arduino TLC5940 Library is free software: you can redistribute it
@@ -40,7 +40,7 @@
     - Arduino digital pin 0-7  = PORTD, PD0-7
     - Arduino digital pin 8-13 = PORTB, PB0-5
     - Arduino analog pin  0-5  = PORTC, PC0-5 */
-    
+
 /** Bit-bang using any two i/o pins */
 #define TLC_BITBANG        1
 /** Use the much faster hardware SPI module */
@@ -52,7 +52,7 @@
     of the first TLC to the SIN (TLC pin 26) of the next.  The rest of the pins
     are attached normally.
     \note Each TLC needs it's own IREF resistor */
-#define NUM_TLCS    1
+#define NUM_TLCS    3
 
 /** Determines how data should be transfered to the TLCs.  Bit-banging can use
     any two i/o pins, but the hardware SPI is faster.
@@ -67,7 +67,7 @@
 /* Set DATA_TRANSFER_MODE to TLC_BITBANG and change the pins below if you need
    to use different pins for sin and sclk.  The defaults are defined in
    pinouts/ATmega_xx8.h for most Arduino's. */
-   
+
 #if DATA_TRANSFER_MODE == TLC_BITBANG
 /** SIN (TLC pin 26) */
 #define SIN_PIN        DEFAULT_BB_SIN_PIN
@@ -87,7 +87,7 @@
 /** Determines how long each PWM period should be, in clocks.
     \f$\displaystyle f_{PWM} = \frac{f_{osc}}{2 * TLC\_PWM\_PERIOD} Hz \f$
     This is related to TLC_GSCLK_PERIOD:
-    \f$\displaystyle TLC\_PWM\_PERIOD = 
+    \f$\displaystyle TLC\_PWM\_PERIOD =
        \frac{(TLC\_GSCLK\_PERIOD + 1) * 4096}{2} \f$
     \note The default of 8192 means the PWM frequency is 976.5625Hz */
 #define TLC_PWM_PERIOD    8192
@@ -116,7 +116,7 @@
 
 /*  You can change the VPRG and XERR pins freely.  The defaults are defined in
     the chip-specific pinouts:  see pinouts/ATmega_xx8.h for most Arduino's. */
-   
+
 #if     VPRG_ENABLED
 /** VPRG (TLC pin 27) */
 #define VPRG_PIN        DEFAULT_VPRG_PIN

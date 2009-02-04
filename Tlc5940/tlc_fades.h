@@ -1,5 +1,5 @@
 /*  Copyright (c) 2009 by Alex Leone <acleone ~AT~ gmail.com>
-   
+
     This file is part of the Arduino TLC5940 Library.
 
     The Arduino TLC5940 Library is free software: you can redistribute it
@@ -25,6 +25,7 @@
 #include <avr/interrupt.h>
 
 #include "Tlc5940.h"
+#include "WProgram.h"
 
 #define TLC_FADE_BUFFER_LENGTH    24
 
@@ -36,15 +37,15 @@ struct Tlc_Fade {
     uint32_t endMillis;
 } tlc_fadeBuffer[TLC_FADE_BUFFER_LENGTH];
 
-volatile uint8_t tlc_fadeBufferSize;
-volatile uint8_t tlc_alreadyCheckingFadeBuffer;
+uint8_t tlc_fadeBufferSize;
 
-//volatile void tlc_fadeBufferCheckCallback(void);
-uint8_t tlc_updateFades(uint32_t currentMillis);
+uint8_t tlc_updateFades();
+uint8_t tlc_addFade(Tlc_Fade *fade);
 uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue,
-                 int16_t endValue, uint32_t startMillis, uint32_t endMillis);
+                    int16_t endValue, uint32_t startMillis, uint32_t endMillis);
+uint8_t tlc_isFading(TLC_CHANNEL_TYPE channel);
 uint8_t tlc_removeFade(TLC_CHANNEL_TYPE channel);
-void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade **end);
+static void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade *end);
 
 /**
  * \addtogroup ExtendedFunctions
@@ -55,6 +56,21 @@ void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade **end);
  */
 /* @{ */
 
+/** Adds a fade to the buffer. */
+uint8_t tlc_addFade(Tlc_Fade *fade)
+{
+    if (tlc_fadeBufferSize == TLC_FADE_BUFFER_LENGTH) {
+        return 0; // fade buffer full
+    }
+    Tlc_Fade *p = tlc_fadeBuffer + tlc_fadeBufferSize++;
+    p->channel = fade->channel;
+    p->startValue = fade->startValue;
+    p->changeValue = fade->changeValue;
+    p->startMillis = fade->startMillis;
+    p->endMillis = fade->endMillis;
+    return tlc_fadeBufferSize;
+}
+
 /**
  * Adds a fade to the fade buffer.
  * \param channel the ouput channel this fade is on
@@ -64,39 +80,31 @@ void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade **end);
  * \param endMillis the millis() when to end the fade
  * \returns 1 if added successfully, 0 if the fade buffer is full.
  */
-/*uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue,
-                 int16_t endValue, uint32_t startMillis, uint32_t endMillis)
-{
-    if (tlc_fadeBufferSize == TLC_FADE_BUFFER_LENGTH) {
-        return 0; // fade buffer full
-    }
-    // disable interrupts so we add at the actual end of the buffer
-    uint8_t oldSREG = SREG;
-    cli();
-    Tlc_Fade p = tlc_fadeBuffer[tlc_fadeBufferSize++];
-    p.channel = channel;
-    p.startValue = startValue;
-    p.changeValue = endValue - startValue;
-    p.startMillis = startMillis;
-    p.endMillis = endMillis;
-    tlc_onUpdateFinished = tlc_fadeBufferCheckCallback;
-    SREG = oldSREG;
-    tlc_fadeBufferCheckCallback();
-}*/
-
 uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue,
-                 int16_t endValue, uint32_t startMillis, uint32_t endMillis)
+                    int16_t endValue, uint32_t startMillis, uint32_t endMillis)
 {
     if (tlc_fadeBufferSize == TLC_FADE_BUFFER_LENGTH) {
         return 0; // fade buffer full
     }
-    tlc_fadeBufferSize++;
-    Tlc_Fade *p = tlc_fadeBuffer + tlc_fadeBufferSize;
+    Tlc_Fade *p = tlc_fadeBuffer + tlc_fadeBufferSize++;
     p->channel = channel;
     p->startValue = startValue;
     p->changeValue = endValue - startValue;
     p->startMillis = startMillis;
     p->endMillis = endMillis;
+    return tlc_fadeBufferSize;
+}
+
+
+uint8_t tlc_isFading(TLC_CHANNEL_TYPE channel)
+{
+    Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
+    for (Tlc_Fade *p = tlc_fadeBuffer; p < end; p++) {
+        if (p->channel == channel) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 /**
@@ -106,20 +114,14 @@ uint8_t tlc_addFade(TLC_CHANNEL_TYPE channel, int16_t startValue,
  */
 uint8_t tlc_removeFade(TLC_CHANNEL_TYPE channel)
 {
-    // disable interrupts so we don't remove a fade while an update is in
-    // progess
-    uint8_t oldSREG = SREG;
-    cli();
     uint8_t removed = 0;
-    Tlc_Fade *p = tlc_fadeBuffer;
     Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
-    for (; p < end; p++) {
+    for (Tlc_Fade *p = tlc_fadeBuffer; p < end; p++) {
         if (p->channel == channel) {
             removed++;
-            tlc_removeFadeFromBuffer(p, &end);
+            tlc_removeFadeFromBuffer(p, --end);
         }
     }
-    SREG = oldSREG;
     return removed;
 }
 
@@ -130,89 +132,46 @@ uint8_t tlc_removeFade(TLC_CHANNEL_TYPE channel)
  * \param current the fade to be removed
  * \param endp the end of the fade buffer (pointer to pointer)
  */
-void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade **endp)
+static void tlc_removeFadeFromBuffer(Tlc_Fade *current, Tlc_Fade *endp)
 {
-    Tlc_Fade *end = *endp;
-    if (--end != current) { // if this is not the last fade
-        // TODO: switch to memcpy?
-        current->channel = end->channel;
-        current->startValue = end->startValue;
-        current->changeValue = end->changeValue;
-        current->startMillis = end->startMillis;
-        current->endMillis = end->endMillis;
+    if (endp != current) { // if this is not the last fade
+        current->channel = endp->channel;
+        current->startValue = endp->startValue;
+        current->changeValue = endp->changeValue;
+        current->startMillis = endp->startMillis;
+        current->endMillis = endp->endMillis;
     }
     tlc_fadeBufferSize--;
 }
 
-/**
- * This is called every PWM period to do stuff.
- */
-/*volatile void tlc_fadeBufferCheckCallback(void)
+/** Updates any running fades.
+    \param currentMillis the current millis() time.
+    \returns 0 if there are no fades left in the buffer. */
+uint8_t tlc_updateFades()
 {
-    if (tlc_alreadyCheckingFadeBuffer)
-        return;
-    tlc_alreadyCheckingFadeBuffer = 1;
-    Tlc_Fade *p = tlc_fadeBuffer;
     Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
+    uint8_t needsUpdate = 0;
     uint32_t currentMillis = millis();
-    uint8_t needsUpdate = 0;
-    for (; p < end; p++){
+    for (Tlc_Fade *p = tlc_fadeBuffer; p < end; p++){
         if (currentMillis >= p->endMillis) { // fade done
             Tlc.set(p->channel, p->startValue + p->changeValue);
             needsUpdate = 1;
-            tlc_removeFadeFromBuffer(p, &end);
+            tlc_removeFadeFromBuffer(p, --end);
         } else {
             uint32_t startMillis = p->startMillis;
             if (currentMillis >= startMillis) {
                 Tlc.set(p->channel, p->startValue + p->changeValue
-                        * (currentMillis - startMillis)
-                        / (p->endMillis - startMillis));
+                        * (int32_t)(currentMillis - startMillis)
+                        / (int32_t)(p->endMillis - startMillis));
                 needsUpdate = 1;
             }
         }
     }
     if (needsUpdate) {
         Tlc.update();
-    }
-    if (tlc_fadeBufferSize == 0) { // all fades have been removed
-        tlc_onUpdateFinished = 0; // we don't need to call this function anymore
-    } else if (!needsUpdate) {
-        // continue PWM updates
-        set_XLAT_interrupt();
-    }
-    tlc_alreadyCheckingFadeBuffer = 0;
-}*/
-
-uint8_t tlc_updateFades(uint32_t currentMillis)
-{
-    if (tlc_needXLAT) {
-        return 1;
-    }
-    Tlc_Fade *p = tlc_fadeBuffer;
-    Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
-    uint8_t needsUpdate = 0;
-    for (; p < end; p++){
-        if (currentMillis >= p->endMillis) { // fade done
-            Tlc.set(p->channel, p->startValue + p->changeValue);
-            needsUpdate = 1;
-            tlc_removeFadeFromBuffer(p, &end);
-        } else {
-            uint32_t startMillis = p->startMillis;
-            if (currentMillis >= startMillis) {
-                Tlc.set(p->channel, p->startValue + p->changeValue
-                        * (currentMillis - startMillis)
-                        / (p->endMillis - startMillis));
-                needsUpdate = 1;
-            }
-        }
-    }
-    if (needsUpdate) {
-        Tlc.update();
-        return 1;
     }
     return tlc_fadeBufferSize;
 }
-
 
 /* @} */
 

@@ -1,5 +1,5 @@
 /*  Copyright (c) 2009 by Alex Leone <acleone ~AT~ gmail.com>
-   
+
     This file is part of the Arduino TLC5940 Library.
 
     The Arduino TLC5940 Library is free software: you can redistribute it
@@ -37,7 +37,7 @@ void tlc_setDCfromProgmem(prog_uint8_t *dcArray);
 /** \addtogroup ExtendedFunctions
     \code #include "tlc_progmem_utils.h" \endcode
     - tlc_setGSfromProgmem(prog_uint8_t *gsArray) - copies the progmem
-      grayscale to current grayscale array.  Requires a 
+      grayscale to current grayscale array.  Requires a
       \link Tlc5940::update Tlc.update() \endlink.
     - tlc_setDCfromProgmem(prog_uint8_t *dcArray) - shifts the data from a
       progmem dot correction array (doesn't need an update). */
@@ -91,7 +91,7 @@ void tlc_setGSfromProgmem(prog_uint8_t *gsArray)
     \code
 #include "tlc_progmem_utils.h"
 prog_uint8_t dcArray1[NUM_TLCS * 12] = {
-  DC_QUARTET(32, 63, 32, 63), DC_QUARTET(32, 63, 32, 63), 
+  DC_QUARTET(32, 63, 32, 63), DC_QUARTET(32, 63, 32, 63),
   DC_QUARTET(32, 63, 32, 63), DC_QUARTET(32, 63, 32, 63),
 };
 

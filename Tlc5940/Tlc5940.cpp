@@ -1,5 +1,5 @@
 /*  Copyright (c) 2009 by Alex Leone <acleone ~AT~ gmail.com>
-   
+
     This file is part of the Arduino TLC5940 Library.
 
     The Arduino TLC5940 Library is free software: you can redistribute it
@@ -103,22 +103,17 @@ void Tlc5940::init(uint16_t initialValue)
     XERR_DDR &= ~_BV(XERR_PIN); // XERR as input
     XERR_PORT |= _BV(XERR_PIN); // enable pull-up resistor
 #endif
-
     BLANK_PORT |= _BV(BLANK_PIN); // leave blank high (until the timers start)
 
-    /* Serial interface initialization */
     tlc_shift8_init();
 
-    /* Set all channels to initialValue */
-    pulse_pin(XLAT_PORT, XLAT_PIN); // latch for kicks
     setAll(initialValue);
     update();
-    tlc_needXLAT = 0;
-    pulse_pin(XLAT_PORT, XLAT_PIN);
-    update();
-    tlc_needXLAT = 0;
+    disable_XLAT_pulses();
     clear_XLAT_interrupt();
+    tlc_needXLAT = 0;
     pulse_pin(XLAT_PORT, XLAT_PIN);
+
 
     /* Timer Setup */
 
@@ -132,7 +127,8 @@ void Tlc5940::init(uint16_t initialValue)
     /* Timer 2 - GSCLK */
 #ifdef TLC_ATMEGA_8_H
     TCCR2  = _BV(COM20)     // set on BOTTOM, clear on OCR2A (non-inverting),
-           | _BV(WGM21);    // output on OC2B, CTC mode with OCR2 top    OCR2   = TLC_GSCLK_PERIOD / 2; // see tlc_config.h
+           | _BV(WGM21);    // output on OC2B, CTC mode with OCR2 top
+    OCR2   = TLC_GSCLK_PERIOD / 2; // see tlc_config.h
     TCCR2 |= _BV(CS20);     // no prescale, (start pwm output)
 #else
     TCCR2A = _BV(COM2B1)      // set on BOTTOM, clear on OCR2A (non-inverting),
@@ -145,7 +141,7 @@ void Tlc5940::init(uint16_t initialValue)
     TCCR2B |= _BV(CS20); // no prescale, (start pwm output)
 #endif
     TCCR1B |= _BV(CS10); // no prescale, (start pwm output)
-
+    update();
 }
 
 /** Clears the grayscale data array, #tlc_GSData, but does not shift in any
@@ -376,11 +372,11 @@ Tlc5940 Tlc;
     an individually adjustable 4096-step grayscale PWM brightness control and
     a 64-step, constant-current sink (no LED resistors needed!).  This chip
     is a current sink, so be sure to use common anode RGB LEDs.
-    
+
     Check the <a href="http://code.google.com/p/tlc5940arduino/">tlc5940arduino
     project</a> on Google Code for updates.  To install, unzip the "Tlc5940"
     folder to &lt;Arduino Folder&gt;/hardware/libraries/
-    
+
     &nbsp;
 
     \section hardwaresetup Hardware Setup
@@ -419,7 +415,7 @@ Tlc5940 Tlc;
 
     \section expansion Expanding the Library
     Lets say we wanted to add a function like "tlc_goCrazy(...)".  The first
-    thing to do is to create a source file in the library folder, 
+    thing to do is to create a source file in the library folder,
     "tlc_my_crazy_functions.h".
     A template for this .h file is
     \code
@@ -467,7 +463,7 @@ tlc_goCrazy();
 
     \section license License - GPLv3
     Copyright (c) 2009 by Alex Leone <acleone ~AT~ gmail.com>
-   
+
     This file is part of the Arduino TLC5940 Library.
 
     The Arduino TLC5940 Library is free software: you can redistribute it

@@ -29,7 +29,9 @@
     -  The 2K resistor between TLC pin 20 and GND will let ~20mA through each
        LED.  To be precise, it's I = 39.06 / R (in ohms).  This doesn't depend
        on the LED driving voltage.
- 
+    - (Optional): put a pull-up resistor (~10k) between +5V and BLANK so that
+                  all the LEDs will turn off when the Arduino is reset.
+
     If you are daisy-chaining more than one TLC, connect the SOUT of the first
     TLC to the SIN of the next.  All the other pins should just be connected
     together:
@@ -37,10 +39,10 @@
         XLAT on Arduino  -> XLAT of TLC1  -> XLAT of TLC2  -> ...
     The one exception is that each TLC needs it's own resistor between pin 20
     and GND.
-    
+
     This library uses the PWM output ability of digital pins 3, 9, 10, and 11.
     Do not use analogWrite(...) on these pins.
-    
+
     This sketch does the Knight Rider strobe across a line of LEDs.
 
     Alex Leone <acleone ~AT~ gmail.com>, 2009-02-03 */
@@ -58,7 +60,7 @@ void setup()
    into all the TLC outputs.  NUM_TLCS is defined in "tlc_config.h" in the
    library folder.  After editing tlc_config.h for your setup, delete the
    Tlc5940.o file to save the changes. */
-   
+
 void loop()
 {
   int direction = 1;
@@ -71,9 +73,9 @@ void loop()
     /* Tlc.set(channel (0-15), value (0-4095)) sets the grayscale value for
        one channel (15 is OUT15 on the first TLC, if multiple TLCs are daisy-
        chained, then channel = 16 would be OUT0 of the second TLC, etc.).
-     
+
        value goes from off (0) to always on (4095).
-    
+
        Like Tlc.clear(), this function only sets up the data, Tlc.update()
        will send the data. */
     if (channel == 0) {
@@ -86,7 +88,7 @@ void loop()
       Tlc.set(channel + 1, 1000);
     } else {
       direction = -1;
-    }    
+    }
 
     /* Tlc.update() sends the data to the TLCs.  This is when the LEDs will
        actually change. */

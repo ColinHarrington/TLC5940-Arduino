@@ -1,5 +1,5 @@
 /*  Copyright (c) 2009 by Alex Leone <acleone ~AT~ gmail.com>
-   
+
     This file is part of the Arduino TLC5940 Library.
 
     The Arduino TLC5940 Library is free software: you can redistribute it

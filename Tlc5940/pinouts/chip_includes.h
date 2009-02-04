@@ -1,5 +1,5 @@
 /*  Copyright (c) 2009 by Alex Leone <acleone ~AT~ gmail.com>
-   
+
     This file is part of the Arduino TLC5940 Library.
 
     The Arduino TLC5940 Library is free software: you can redistribute it
@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with The Arduino TLC5940 Library.  If not, see
     <http://www.gnu.org/licenses/>. */
-    
+
 #ifndef TLC_CHIP_INCLUDES_H
 #define TLC_CHIP_INCLUDES_H
 
@@ -30,7 +30,7 @@
  || defined (__AVR_ATmega48P__)  \
  || defined (__AVR_ATmega48__)   \
  || defined (__AVR_ATmega328P__)
- 
+
 /* Diecimila / Duemilanove / almost everything */
 #include "ATmega_xx8.h"
 
@@ -43,7 +43,7 @@
    || defined (__AVR_ATmega324P__) \
    || defined (__AVR_ATmega644__)  \
    || defined (__AVR_ATmega644P__)
-   
+
 /* Sanguino */
 #include "ATmega_xx4.h"
 

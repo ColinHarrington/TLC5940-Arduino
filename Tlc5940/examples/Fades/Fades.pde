@@ -1,5 +1,8 @@
 /*
-    Fades 10 random outputs randomly.
+    Fades a line down the channels, with max value and duration based on
+    the voltage of analog pin 0.
+    Try grounding analog 0: everything should turn off.
+    Try putting +5V into analog 0: everything should turn on.
 
     See the BasicUse example for hardware setup.
 
@@ -8,6 +11,8 @@
 #include "Tlc5940.h"
 #include "tlc_fades.h"
 
+TLC_CHANNEL_TYPE channel;
+
 void setup()
 {
   Tlc.init();
@@ -15,28 +20,18 @@ void setup()
 
 void loop()
 {
-  while (tlc_fadeBufferSize < 10) {
-
-    TLC_CHANNEL_TYPE channel = random(NUM_TLCS * 16);
-
-    // remove any fades on this channel already happening
-    tlc_removeFade(channel);
-
-    int startValue = Tlc.get(channel);
-    int endValue = random(4095);
-
-    unsigned long currentMillis = millis();
-    // Start the fade anywhere from 30 to 3030 milliseconds from now
-    unsigned long startMillis = currentMillis + 30 + random(3000);
-    // End the fade after 100 to 3100 milliseconds
-    unsigned long endMillis = startMillis + 100 + random(3000);
-
-    // Add the fade to the buffer.
-    // The default buffer length is 16, so a max of 16 fades at once.
-    // tlc_addFade will return 0 if the fade buffer is full.
-    // If you need more fades, edit TLC_FADE_BUFFER_LENGTH in tlc_fades.h
-    tlc_addFade(channel, startValue, endValue, startMillis, endMillis);
+  if (tlc_fadeBufferSize < TLC_FADE_BUFFER_LENGTH - 2) {
+    if (!tlc_isFading(channel)) {
+      uint16_t duration = analogRead(0) * 2;
+      int maxValue = analogRead(0) * 2;
+      uint32_t startMillis = millis() + 50;
+      uint32_t endMillis = startMillis + duration;
+      tlc_addFade(channel, 0, maxValue, startMillis, endMillis);
+      tlc_addFade(channel, maxValue, 0, endMillis, endMillis + duration);
+    }
+    if (channel++ == NUM_TLCS * 16) {
+      channel = 0;
+    }
   }
-  // call this to update the fades
-  tlc_updateFades(millis());
+  tlc_updateFades();
 }
