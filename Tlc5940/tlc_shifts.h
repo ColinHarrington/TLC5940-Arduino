@@ -27,9 +27,17 @@
 uint16_t tlc_shiftUp(uint16_t zeroValue = 0);
 uint16_t tlc_shiftDown(uint16_t topValue = 0);
 
+/** \addtogroup ExtendedFunctions
+    \code #include "tlc_shifts.h" \endcode
+    - uint16_t tlc_shiftUp(uint16_t zeroValue = 0) - shifts all channel data
+        up (OUT0 becomes OUT1 ...) and returns OUT15
+    - uint16_t tlc_shiftDown(uint16_t topValue = 0) - shifts all channel data
+        down (OUT15 becomes OUT14 ...) and returns OUT0 */
+/* @{ */
+
 /** Shifts all the channel data up (OUT0 becomes OUT1 ...).  Needs a
     Tlc.update() after.
-    \params zeroValue the value of channel 0.
+    \param zeroValue the value of channel 0.
     \returns the value that was shifted off the end (OUT15) */
 uint16_t tlc_shiftUp(uint16_t zeroValue)
 {
@@ -49,7 +57,7 @@ uint16_t tlc_shiftUp(uint16_t zeroValue)
 
 /** Shifts all the channel data down (OUT 15 -> OUT 14 ...). Needs a
     Tlc.update() after.
-    \params topValue the value of Tlc (n) channel 15.
+    \param topValue the value of Tlc (n) channel 15.
     \returns the value that was shifted off the bottom (OUT0) */
 uint16_t tlc_shiftDown(uint16_t topValue)
 {
@@ -67,6 +75,7 @@ uint16_t tlc_shiftDown(uint16_t topValue)
     return zeroValue;
 }
 
-
+/* @} */
 
 #endif
+

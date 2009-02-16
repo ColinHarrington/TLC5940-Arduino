@@ -42,3 +42,4 @@ void loop()
     tlc_updateFades(currentMillis);
   } while (currentMillis - lastMillis <= LED_PERIOD);
 }
+

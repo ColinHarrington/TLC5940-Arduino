@@ -84,3 +84,4 @@ void tlc_dcModeStop(void);
 extern Tlc5940 Tlc;
 
 #endif
+

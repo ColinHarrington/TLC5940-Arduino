@@ -26,15 +26,15 @@
     this file, delete Tlc5940.o in this folder so the changes are applied.
 
     A summary of all the options:
-    - Number of TLCs daisy-chained: #NUM_TLCS (default 1)
-    - Enable/Disable VPRG functionality: #VPRG_ENABLED (default 0)
-    - Enable/Disable XERR functionality: #XERR_ENABLED (default 0)
+    - Number of TLCs daisy-chained: NUM_TLCS (default 1)
+    - Enable/Disable VPRG functionality: VPRG_ENABLED (default 0)
+    - Enable/Disable XERR functionality: XERR_ENABLED (default 0)
     - Should the library use bit-banging (any pins) or hardware SPI (faster):
-      #DATA_TRANSFER_MODE (default TLC_SPI)
-    - Which pins to use for bit-banging: #SIN_PIN, #SIN_PORT, #SIN_DDR and
-      #SCLK_PIN, #SCLK_PORT, #SCLK_DDR
-    - The PWM period: #TLC_PWM_PERIOD (be sure to change #TLC_GSCLK_PERIOD
-      accordingly!)
+        DATA_TRANSFER_MODE (default TLC_SPI)
+    - Which pins to use for bit-banging: SIN_PIN, SIN_PORT, SIN_DDR and
+        SCLK_PIN, SCLK_PORT, SCLK_DDR
+    - The PWM period: TLC_PWM_PERIOD (be sure to change TLC_GSCLK_PERIOD
+        accordingly!)
 
     How to change the pin mapping:
     - Arduino digital pin 0-7  = PORTD, PD0-7
@@ -86,6 +86,7 @@
 
 /** Determines how long each PWM period should be, in clocks.
     \f$\displaystyle f_{PWM} = \frac{f_{osc}}{2 * TLC\_PWM\_PERIOD} Hz \f$
+    \f$\displaystyle TLC\_PWM\_PERIOD = \frac{f_{osc}}{2 * f_{PWM}} \f$
     This is related to TLC_GSCLK_PERIOD:
     \f$\displaystyle TLC\_PWM\_PERIOD =
        \frac{(TLC\_GSCLK\_PERIOD + 1) * 4096}{2} \f$
@@ -169,3 +170,4 @@
 #endif
 
 #endif
+

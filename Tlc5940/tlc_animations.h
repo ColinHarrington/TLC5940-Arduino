@@ -29,9 +29,13 @@
 #include "Tlc5940.h"
 #include "tlc_progmem_utils.h"
 
+/** The currently playing animation */
 prog_uint8_t *tlc_currentAnimation;
+/** The number of frames in the current animation */
 volatile uint16_t tlc_animationFrames;
+/** The number of PWM periods to display each frame - 1 */
 volatile uint16_t tlc_animationPeriodsPerFrame;
+/** The current number of periods we've displayed this frame for */ 
 volatile uint16_t tlc_animationPeriodsWait;
 
 volatile void tlc_animationXLATCallback(void);
@@ -39,8 +43,8 @@ void tlc_playAnimation(prog_uint8_t *animation, uint16_t frames, uint16_t period
 
 /** \addtogroup ExtendedFunctions
     \code #include "tlc_animations.h" \endcode
-    - tlc_playAnimation(prog_uint8_t *animation, uint16_t frames, uint16_t periodsPerFrame) - plays an
-    animation from progmem. */
+    - void tlc_playAnimation(prog_uint8_t *animation, uint16_t frames,
+            uint16_t periodsPerFrame) - plays an animation from progmem. */
 /* @{ */
 
 /** Plays an animation from progmem in the "background" (with interrupts).
@@ -69,7 +73,8 @@ volatile void tlc_animationXLATCallback(void)
         set_XLAT_interrupt();
     } else {
         if (tlc_animationFrames) {
-            tlc_setGSfromProgmem(tlc_currentAnimation + (--tlc_animationFrames * NUM_TLCS * 24));
+            tlc_setGSfromProgmem(tlc_currentAnimation +
+                                (--tlc_animationFrames * NUM_TLCS * 24));
             tlc_animationPeriodsWait = tlc_animationPeriodsPerFrame;
             Tlc.update();
         } else { // animation is done

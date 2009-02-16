@@ -36,10 +36,10 @@ void tlc_setDCfromProgmem(prog_uint8_t *dcArray);
 
 /** \addtogroup ExtendedFunctions
     \code #include "tlc_progmem_utils.h" \endcode
-    - tlc_setGSfromProgmem(prog_uint8_t *gsArray) - copies the progmem
+    - void tlc_setGSfromProgmem(prog_uint8_t *gsArray) - copies the progmem
       grayscale to current grayscale array.  Requires a
       \link Tlc5940::update Tlc.update() \endlink.
-    - tlc_setDCfromProgmem(prog_uint8_t *dcArray) - shifts the data from a
+    - void tlc_setDCfromProgmem(prog_uint8_t *dcArray) - shifts the data from a
       progmem dot correction array (doesn't need an update). */
 /* @{ */
 
@@ -130,3 +130,4 @@ void tlc_setDCfromProgmem(prog_uint8_t *dcArray)
 /* @} */
 
 #endif
+

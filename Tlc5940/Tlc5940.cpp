@@ -97,11 +97,11 @@ void Tlc5940::init(uint16_t initialValue)
     GSCLK_DDR |= _BV(GSCLK_PIN);
 #if VPRG_ENABLED
     VPRG_DDR |= _BV(VPRG_PIN);
-    VPRG_PORT &= ~_BV(VPRG_PIN); // grayscale mode (VPRG low)
+    VPRG_PORT &= ~_BV(VPRG_PIN);  // grayscale mode (VPRG low)
 #endif
 #if XERR_ENABLED
-    XERR_DDR &= ~_BV(XERR_PIN); // XERR as input
-    XERR_PORT |= _BV(XERR_PIN); // enable pull-up resistor
+    XERR_DDR &= ~_BV(XERR_PIN);   // XERR as input
+    XERR_PORT |= _BV(XERR_PIN);   // enable pull-up resistor
 #endif
     BLANK_PORT |= _BV(BLANK_PIN); // leave blank high (until the timers start)
 
@@ -126,10 +126,10 @@ void Tlc5940::init(uint16_t initialValue)
 
     /* Timer 2 - GSCLK */
 #ifdef TLC_ATMEGA_8_H
-    TCCR2  = _BV(COM20)     // set on BOTTOM, clear on OCR2A (non-inverting),
-           | _BV(WGM21);    // output on OC2B, CTC mode with OCR2 top
+    TCCR2  = _BV(COM20)       // set on BOTTOM, clear on OCR2A (non-inverting),
+           | _BV(WGM21);      // output on OC2B, CTC mode with OCR2 top
     OCR2   = TLC_GSCLK_PERIOD / 2; // see tlc_config.h
-    TCCR2 |= _BV(CS20);     // no prescale, (start pwm output)
+    TCCR2 |= _BV(CS20);       // no prescale, (start pwm output)
 #else
     TCCR2A = _BV(COM2B1)      // set on BOTTOM, clear on OCR2A (non-inverting),
                               // output on OC2B
@@ -138,9 +138,9 @@ void Tlc5940::init(uint16_t initialValue)
     TCCR2B = _BV(WGM22);      // Fast pwm with OCR2A top
     OCR2B = 0;                // duty factor (as short a pulse as possible)
     OCR2A = TLC_GSCLK_PERIOD; // see tlc_config.h
-    TCCR2B |= _BV(CS20); // no prescale, (start pwm output)
+    TCCR2B |= _BV(CS20);      // no prescale, (start pwm output)
 #endif
-    TCCR1B |= _BV(CS10); // no prescale, (start pwm output)
+    TCCR1B |= _BV(CS10);      // no prescale, (start pwm output)
     update();
 }
 
@@ -153,7 +153,6 @@ void Tlc5940::clear(void)
 }
 
 /** Shifts in the data from the grayscale data array, #tlc_GSData.
-
     If data has already been shifted in this grayscale cycle, another call to
     update() will immediately return 1 without shifting in the new data.  To
     ensure that a call to update() does shift in new data, use
@@ -189,7 +188,6 @@ uint8_t Tlc5940::update(void)
 }
 
 /** Sets channel to value in the grayscale data array, #tlc_GSData.
-
     \param channel (0 to #NUM_TLCS * 16 - 1).  OUT0 of the first TLC is
            channel 0, OUT0 of the next TLC is channel 16, etc.
     \param value (0-4095).  The grayscale value, 4095 is maximum.
@@ -297,6 +295,7 @@ uint8_t Tlc5940::readXERR(void)
 
 #if DATA_TRANSFER_MODE == TLC_BITBANG
 
+/** Sets all the bit-bang pins to output */
 void tlc_shift8_init(void)
 {
     SIN_DDR |= _BV(SIN_PIN);   // SIN as output
@@ -304,6 +303,7 @@ void tlc_shift8_init(void)
     SCLK_PORT &= ~_BV(SCLK_PIN);
 }
 
+/** Shifts a byte out, MSB first */
 void tlc_shift8(uint8_t byte)
 {
     for (uint8_t bit = 128; bit; bit >>= 1) {
@@ -318,6 +318,7 @@ void tlc_shift8(uint8_t byte)
 
 #elif DATA_TRANSFER_MODE == TLC_SPI
 
+/** Initializes the SPI module to double speed (f_osc / 2) */
 void tlc_shift8_init(void)
 {
     SIN_DDR    |= _BV(SIN_PIN);    // SPI MOSI as output
@@ -331,6 +332,7 @@ void tlc_shift8_init(void)
          | _BV(MSTR);  // master mode
 }
 
+/** Shifts out a byte, MSB first */
 void tlc_shift8(uint8_t byte)
 {
     SPDR = byte; // starts transmission
@@ -479,3 +481,4 @@ tlc_goCrazy();
     You should have received a copy of the GNU General Public License
     along with The Arduino TLC5940 Library.  If not, see
     <http://www.gnu.org/licenses/>. */
+
