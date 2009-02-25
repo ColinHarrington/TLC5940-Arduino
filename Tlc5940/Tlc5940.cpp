@@ -63,8 +63,8 @@ ISR(TIMER1_OVF_vect)
     disable_XLAT_pulses();
     clear_XLAT_interrupt();
     tlc_needXLAT = 0;
-    sei();
     if (tlc_onUpdateFinished) {
+        sei();
         tlc_onUpdateFinished();
     }
 }
@@ -174,8 +174,7 @@ uint8_t Tlc5940::update(void)
         pulse_pin(SCLK_PORT, SCLK_PIN);
     }
     uint8_t *p = tlc_GSData;
-    uint8_t *end = tlc_GSData + NUM_TLCS * 24;
-    while (p < end) {
+    while (p < tlc_GSData + NUM_TLCS * 24) {
         // partial loop unroll, premature optimization?
         tlc_shift8(*p++);
         tlc_shift8(*p++);
@@ -234,8 +233,7 @@ void Tlc5940::setAll(uint16_t value)
     uint8_t firstByte = value >> 4;
     uint8_t secondByte = (value << 4) | (value >> 8);
     uint8_t *p = tlc_GSData;
-    uint8_t *end = tlc_GSData + NUM_TLCS * 24;
-    while (p < end) {
+    while (p < tlc_GSData + NUM_TLCS * 24) {
         *p++ = firstByte;
         *p++ = secondByte;
         *p++ = (uint8_t)value;
@@ -306,7 +304,7 @@ void tlc_shift8_init(void)
 /** Shifts a byte out, MSB first */
 void tlc_shift8(uint8_t byte)
 {
-    for (uint8_t bit = 128; bit; bit >>= 1) {
+    for (uint8_t bit = 0x80; bit; bit >>= 1) {
         if (bit & byte) {
             SIN_PORT |= _BV(SIN_PIN);
         } else {
@@ -336,7 +334,8 @@ void tlc_shift8_init(void)
 void tlc_shift8(uint8_t byte)
 {
     SPDR = byte; // starts transmission
-    while (!(SPSR & _BV(SPIF))); // wait for transmission complete
+    while (!(SPSR & _BV(SPIF)))
+        ; // wait for transmission complete
 }
 
 #endif
