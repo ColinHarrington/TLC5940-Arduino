@@ -1,3 +1,6 @@
+2009-03-05
+    - Fixed the missing pin definitions for the ATmega328p
+
 2009-02-16
     - Added tlc_servos.h and example (thank you Steve Pomeroy)
     - Cleaned up some older documentation

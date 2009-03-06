@@ -1,5 +1,5 @@
 #######################################
-# Syntax Coloring Map For TLC5940LED
+# Syntax Coloring Map For TLC5940
 #######################################
 
 #######################################
@@ -25,6 +25,8 @@ tlc_setDCfromProgmem    KEYWORD2
 tlc_playAnimation       KEYWORD2
 tlc_addFade             KEYWORD2
 tlc_removeFade          KEYWORD2
+tlc_shiftUp             KEYWORD2
+tlc_shiftDown           KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
