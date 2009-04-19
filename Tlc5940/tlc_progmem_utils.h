@@ -70,7 +70,6 @@ void tlc_setGSfromProgmem(prog_uint8_t *gsArray)
     prog_uint8_t *gsArrayp = gsArray;
     uint8_t *gsDatap = tlc_GSData;
     while (gsDatap < tlc_GSData + NUM_TLCS * 24) {
-        // partial loop unroll, bite me for premature optimization?
         *gsDatap++ = pgm_read_byte(gsArrayp++);
         *gsDatap++ = pgm_read_byte(gsArrayp++);
         *gsDatap++ = pgm_read_byte(gsArrayp++);

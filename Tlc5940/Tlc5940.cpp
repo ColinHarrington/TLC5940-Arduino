@@ -175,7 +175,6 @@ uint8_t Tlc5940::update(void)
     }
     uint8_t *p = tlc_GSData;
     while (p < tlc_GSData + NUM_TLCS * 24) {
-        // partial loop unroll, premature optimization?
         tlc_shift8(*p++);
         tlc_shift8(*p++);
         tlc_shift8(*p++);
@@ -394,17 +393,20 @@ Tlc5940 Tlc;
 
     \section libref Library Reference
     \ref CoreFunctions "Core Functions" (see the BasicUse Example and Tlc5940):
-    - \link Tlc5940::init Tlc.init()\endlink - Call this is setup before using
-            any other Tlc functions
-    - \link Tlc5940::clear Tlc.clear()\endlink - Clears the grayscale data
-            array to zero. (Needs Tlc.update())
-    - \link Tlc5940::set Tlc.set(uint8_t channel (0-(NUM_TLCS * 16 - 1)),
-            value (0-4095))\endlink - sets the grayscale data for channel.
+    - \link Tlc5940::init Tlc.init(int initialValue (0-4095))\endlink - Call this is
+            to setup the timers before using any other Tlc functions.
+            initialValue defaults to zero (all channels off).
+    - \link Tlc5940::clear Tlc.clear()\endlink - Turns off all channels
             (Needs Tlc.update())
+    - \link Tlc5940::set Tlc.set(uint8_t channel (0-(NUM_TLCS * 16 - 1)),
+            int value (0-4095))\endlink - sets the grayscale data for channel.
+            (Needs Tlc.update())
+    - \link Tlc5940::setAll Tlc.setAll(int value(0-4095))\endlink - sets all
+            channels to value. (Needs Tlc.update())
     - \link Tlc5940::get uint16_t Tlc.get(uint8_t channel)\endlink - returns
             the grayscale data for channel (see set).
-    - \link Tlc5940::update Tlc.update()\endlink - Sends the grayscale data
-            array to the TLCs.
+    - \link Tlc5940::update Tlc.update()\endlink - Sends the changes from any
+            Tlc.clear's, Tlc.set's, or Tlc.setAll's.
 
     \ref ExtendedFunctions "Extended Functions".  These require an include
     statement at the top of the sketch to use.

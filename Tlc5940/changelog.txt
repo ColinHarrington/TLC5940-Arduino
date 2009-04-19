@@ -1,3 +1,9 @@
+2009-04-19
+    - Bug fix in tlc_fades.h (incrementing a pointer after removing something
+        from the fadeBuffer array).  Also tlc_updateFades() will wait till after
+        an update if it's just removed the last fade.
+    - Updated the core function documentation.
+
 2009-03-05
     - Fixed the missing pin definitions for the ATmega328p
 

@@ -28,7 +28,7 @@
 #include "WProgram.h"
 
 #ifndef TLC_FADE_BUFFER_LENGTH
-/** The default fade buffer length (24) */
+/** The default fade buffer length (24).  Uses 24*13 = 312 bytes of ram. */
 #define TLC_FADE_BUFFER_LENGTH    24
 #endif
 
@@ -172,11 +172,12 @@ uint8_t tlc_updateFades(uint32_t currentMillis)
 {
     struct Tlc_Fade *end = tlc_fadeBuffer + tlc_fadeBufferSize;
     uint8_t needsUpdate = 0;
-    for (struct Tlc_Fade *p = tlc_fadeBuffer; p < end; p++){
+    for (struct Tlc_Fade *p = tlc_fadeBuffer; p < end;){
         if (currentMillis >= p->endMillis) { // fade done
             Tlc.set(p->channel, p->startValue + p->changeValue);
             needsUpdate = 1;
             tlc_removeFadeFromBuffer(p, --end);
+            continue;
         } else {
             uint32_t startMillis = p->startMillis;
             if (currentMillis >= startMillis) {
@@ -186,9 +187,14 @@ uint8_t tlc_updateFades(uint32_t currentMillis)
                 needsUpdate = 1;
             }
         }
+        p++;
     }
     if (needsUpdate) {
         Tlc.update();
+        if (tlc_fadeBufferSize == 0) {
+            while (tlc_needXLAT)
+                ;
+        }
     }
     return tlc_fadeBufferSize;
 }
