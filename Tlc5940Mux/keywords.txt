@@ -1,0 +1,36 @@
+#######################################
+# Syntax Coloring Map For TLC5940
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Tlc5940Mux      KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init            KEYWORD2
+clear           KEYWORD2
+set             KEYWORD2
+setAll          KEYWORD2
+setRow          KEYWORD2
+get             KEYWORD2
+setAllDC        KEYWORD2
+readXERR        KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+TlcMux          KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+NUM_TLCS        LITERAL1
+TLC_NUM_MUX     LITERAL1
+tlcMux_GSData   LITERAL1
