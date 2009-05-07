@@ -22,7 +22,7 @@
 #if DATA_TRANSFER_MODE == TLC_BITBANG
 
 /** Sets all the bit-bang pins to output */
-static void tlc_shift8_init(void)
+static void TlcMux_shift8_init(void)
 {
     SIN_DDR |= _BV(SIN_PIN);   // SIN as output
     SCLK_DDR |= _BV(SCLK_PIN); // SCLK as output
@@ -30,7 +30,7 @@ static void tlc_shift8_init(void)
 }
 
 /** Shifts a byte out, MSB first */
-void tlc_shift8(uint8_t byte)
+void TlcMux_shift8(uint8_t byte)
 {
     for (uint8_t bit = 0x80; bit; bit >>= 1) {
         if (bit & byte) {
@@ -46,7 +46,7 @@ void tlc_shift8(uint8_t byte)
 #elif DATA_TRANSFER_MODE == TLC_SPI
 
 /** Initializes the SPI module to double speed (f_osc / 2) */
-static void tlc_shift8_init(void)
+static void TlcMux_shift8_init(void)
 {
     SIN_DDR    |= _BV(SIN_PIN);    // SPI MOSI as output
     SCLK_DDR   |= _BV(SCLK_PIN);   // SPI SCK as output
@@ -60,7 +60,7 @@ static void tlc_shift8_init(void)
 }
 
 /** Shifts out a byte, MSB first */
-static void tlc_shift8(uint8_t byte)
+static void TlcMux_shift8(uint8_t byte)
 {
     SPDR = byte; // starts transmission
     while (!(SPSR & _BV(SPIF)))

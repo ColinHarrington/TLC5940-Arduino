@@ -52,16 +52,22 @@
     of the first TLC to the SIN (TLC pin 26) of the next.  The rest of the pins
     are attached normally.
     \note Each TLC needs it's own IREF resistor */
-#define NUM_TLCS    3
+#ifndef NUM_TLCS
+#define NUM_TLCS    1
+#endif
 
 /** Number of rows Multiplexed. */
-#define TLC_NUM_MUX     8
+#ifndef NUM_ROWS
+#define NUM_ROWS    1
+#endif
 
 /** Determines how data should be transfered to the TLCs.  Bit-banging can use
     any two i/o pins, but the hardware SPI is faster.
     - Bit-Bang = TLC_BITBANG
     - Hardware SPI = TLC_SPI (default) */
+#ifndef DATA_TRANSFER_MODE
 #define DATA_TRANSFER_MODE    TLC_SPI
+#endif
 
 /* This include is down here because the files it includes needs the data
    transfer mode */
@@ -83,9 +89,13 @@
 #endif
 
 
-/** If more than 16 TLCs are daisy-chained, the channel type has to be uint16_t.
-    Default is uint8_t, which supports up to 16 TLCs. */
+#if NUM_TLCS <= 16
 #define TLC_CHANNEL_TYPE    uint8_t
+#define TLC_CHANNEL_TYPE_STR  '1'
+#else
+#define TLC_CHANNEL_TYPE    uint16_t
+#define TLC_CHANNEL_TYPE_STR  '2'
+#endif
 
 /** Determines how long each PWM period should be, in clocks.
     \f$\displaystyle f_{PWM} = \frac{f_{osc}}{2 * TLC\_PWM\_PERIOD} Hz \f$
@@ -94,14 +104,18 @@
     \f$\displaystyle TLC\_PWM\_PERIOD =
        \frac{(TLC\_GSCLK\_PERIOD + 1) * 4096}{2} \f$
     \note The default of 8192 means the PWM frequency is 976.5625Hz */
+#ifndef TLC_PWM_PERIOD
 #define TLC_PWM_PERIOD    4096
+#endif
 
 /** Determines how long each period GSCLK is.
     This is related to TLC_PWM_PERIOD:
     \f$\displaystyle TLC\_GSCLK\_PERIOD =
        \frac{2 * TLC\_PWM\_PERIOD}{4096} - 1 \f$
     \note Default is 3 */
+#ifndef TLC_GSCLK_PERIOD
 #define TLC_GSCLK_PERIOD    1
+#endif
 
 /** Enables/disables VPRG (TLC pin 27) functionality.  If you need to set dot
     correction data, this needs to be enabled.
@@ -109,14 +123,18 @@
     - 1 VPRG is connected
     \note VPRG to GND inputs grayscale data, VPRG to Vcc inputs dot-correction
           data */
+#ifndef VPRG_ENABLED
 #define VPRG_ENABLED    0
+#endif
 
 /** Enables/disables XERR (TLC pin 16) functionality to check for shorted/broken
     LEDs
     - 0 XERR is not connected (default)
     - 1 XERR is connected
     \note XERR is active low */
+#ifndef XERR_ENABLED
 #define XERR_ENABLED    0
+#endif
 
 /*  You can change the VPRG and XERR pins freely.  The defaults are defined in
     the chip-specific pinouts:  see pinouts/ATmega_xx8.h for most Arduino's. */

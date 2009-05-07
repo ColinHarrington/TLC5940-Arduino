@@ -1,0 +1,53 @@
+Commands (all multiple char commands are MSB first):
+  
+  Awake - are you there?:
+    sent: 'a'
+    received: 'a'
+  
+  Info - get info like NUM_TLCS, TLCS_NUM_MUX, version, etc:
+    sent: 'i'
+    received: version [1 char] + NUM_TLCS [1 char] + NUM_ROWS [1 char]
+                  + TLC_CHANNEL_TYPE [1 char - '1' for uint8_t,
+                                               '2' for uint16_t]
+                  + 'i'
+    
+  Clear - TlcMux.clear():
+    sent: 'C'
+    received: 'C'
+
+  Clear Row - TlcMux.clearRow(row):
+    sent: 'c' + row [1 char]
+    received: 'c'
+  
+  Set - TlcMux.set(row, channel, value):
+    sent: 's' + row [1 char] + channel [1* char] + value [2 chars]
+    received: 's'
+    
+  Set Row - sets a row:
+    sent: 'S' + row [1 char] + channel values [2 chars x (NUM_TLCS * 16)]
+    received: 'S'
+  
+  Set All to Single Value - TlcMux.setAll(value);
+    sent: 't' + value [2 chars]
+    received: 't'
+  
+  Set Row to Single Value - TlcMux.setRow(row, value):
+    sent: 'T' + row [1 char] + value [2 chars]
+    received: 'T'
+    
+  Get - TlcMux.get(row, channel):
+    sent: 'g' + row [1 char] + channel [1* char]
+    received: [2 chars] + 'g'
+    
+  Get Row - gets a row of values:
+    sent: 'G' + row [1 char]
+    received: channel values [2 chars x (NUM_TLCS * 16)] + 'G'
+    
+  
+  Modify Array Row - low-level write to a row in tlcMux_GSData:
+    sent: 'm' + row [1 char] + [1 char x (NUM_TLCS * 24)]
+    received: 'm'
+  
+  Modify Array - directly sets tlcMux_GSData:
+    sent: 'M' + array offset [2 chars] + length [2 chars] + [1 char x length]
+    received: 'M'

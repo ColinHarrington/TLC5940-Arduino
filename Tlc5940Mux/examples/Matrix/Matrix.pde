@@ -13,30 +13,23 @@
     Alex Leone, 2009-04-30
 */
 
+#define  NUM_TLCS  3
+#define  NUM_ROWS  8
 #include "Tlc5940Mux.h"
-#include "tlc_shift8.h"
 
 volatile uint8_t isShifting;
-uint8_t row;
+uint8_t shiftRow;
 
 ISR(TIMER1_OVF_vect)
 {
   if (!isShifting) {
     disable_XLAT_pulses();
-    //XLAT_PORT |=  _BV(XLAT_PIN);
-    //XLAT_PORT &= ~_BV(XLAT_PIN);
-    PORTC = row;
-    if (++row == TLC_NUM_MUX) {
-      row = 0;
-    }
     isShifting = 1;
     sei();
-    uint8_t *p = tlcMux_GSData[row];
-    uint8_t * const end = p + NUM_TLCS * 24;
-    while (p < end) {
-      tlc_shift8(*p++);
-      tlc_shift8(*p++);
-      tlc_shift8(*p++);
+    TlcMux_shiftRow(shiftRow);
+    PORTC = shiftRow++;
+    if (shiftRow == NUM_ROWS) {
+      shiftRow = 0;
     }
     enable_XLAT_pulses();
     isShifting = 0;
@@ -46,14 +39,21 @@ ISR(TIMER1_OVF_vect)
 void setup()
 {
   DDRC |= _BV(PC0) | _BV(PC1) | _BV(PC2);
-  tlc_shift8_init();
-  TlcMux.init();
-  for (uint8_t i = 0; i < 8; i++) {
-    TlcMux.set(i, i, 4095);
-  }
+  TlcMux_init();
 }
 
+uint8_t color;
 void loop()
 {
-  
+  TlcMux_clear();
+  for (uint8_t col = 0; col < 11; col++) {
+    for (uint8_t row = 0; row < NUM_ROWS; row++) {
+      TlcMux_set(row, col + color * 16, 4095);
+    }
+    color++;
+    if (color == 3) {
+      color = 0;
+    }
+  }
+  delay(2000);
 }
