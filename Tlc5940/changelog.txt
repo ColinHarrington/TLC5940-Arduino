@@ -1,3 +1,6 @@
+2009-05-07
+    - Added support for the Arduino Mega
+
 2009-04-19
     - Bug fix in tlc_fades.h (incrementing a pointer after removing something
         from the fadeBuffer array).  Also tlc_updateFades() will wait till after

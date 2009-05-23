@@ -14,6 +14,7 @@ def main():
 
     ser = serial.Serial('/dev/ttyUSB0', baudrate=500000)
     print('Serial Port: ' + ser.portstr)
+    time.sleep(5)
     tlc = TlcMux(ser)
     tlc.clear()
     if tlc.NUM_ROWS != height:

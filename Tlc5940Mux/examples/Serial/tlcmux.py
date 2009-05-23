@@ -5,10 +5,10 @@ import array
 import serial
 import time
 
-def main():
+def test():
     ser = serial.Serial('/dev/ttyUSB0', baudrate=57600)
     print('Serial Port: ' + ser.portstr)
-    time.sleep(0.1)
+    time.sleep(5)
     tlc = TlcMux(ser)
     tlc.clear()
     tlc.set(0, 0, 4095)
@@ -202,5 +202,5 @@ class TlcMux:
     
 
 if __name__ == '__main__':
-    main()
+    test()
     
