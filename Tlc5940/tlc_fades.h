@@ -25,7 +25,12 @@
 #include <avr/interrupt.h>
 
 #include "Tlc5940.h"
+
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"
+#else
 #include "WProgram.h"
+#endif
 
 #ifndef TLC_FADE_BUFFER_LENGTH
 /** The default fade buffer length (24).  Uses 24*13 = 312 bytes of ram. */

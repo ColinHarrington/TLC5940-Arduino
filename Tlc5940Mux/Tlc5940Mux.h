@@ -85,11 +85,20 @@ static void TlcMux_init(uint16_t initialValue)
     TIMSK1 = _BV(TOIE1);
 #endif
     /* Timer 2 - GSCLK */
-#ifdef TLC_ATMEGA_8_H
+#if defined(TLC_ATMEGA_8_H)
     TCCR2  = _BV(COM20)       // set on BOTTOM, clear on OCR2A (non-inverting),
            | _BV(WGM21);      // output on OC2B, CTC mode with OCR2 top
     OCR2   = TLC_GSCLK_PERIOD / 2; // see tlc_config.h
     TCCR2 |= _BV(CS20);       // no prescale, (start pwm output)
+#elif defined(TLC_TIMER3_GSCLK)
+    TCCR3A = _BV(COM3A1)      // set on BOTTOM, clear on OCR3A (non-inverting),
+                              // output on OC3A
+           | _BV(WGM31);      // Fast pwm with ICR3 top
+    OCR3A = 0;                // duty factor (as short a pulse as possible)
+    ICR3 = TLC_GSCLK_PERIOD;  // see tlc_config.h
+    TCCR3B = _BV(CS30)        // no prescale, (start pwm output)
+           | _BV(WGM32)       // Fast pwm with ICR3 top
+           | _BV(WGM33);      // Fast pwm with ICR3 top
 #else
     TCCR2A = _BV(COM2B1)      // set on BOTTOM, clear on OCR2A (non-inverting),
                               // output on OC2B

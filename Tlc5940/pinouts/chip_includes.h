@@ -99,6 +99,17 @@
 /* Arduino Mega */
 #include "Arduino_Mega.h"
 
+#elif defined (__AVR_ATmega32U4__)
+
+/* Teensy 2.0 */
+#include "Teensy_xxU4.h"
+
+#elif defined (__AVR_AT90USB646__) \
+   || defined (__AVR_AT90USB1286__)
+
+/* Teensy++ 2.0 */
+#include "Teensypp_xxx6.h"
+
 #else
 #error "Unknown Chip!"
 #endif

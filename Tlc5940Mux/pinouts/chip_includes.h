@@ -54,6 +54,16 @@
 #define PD6     PORTD6
 #define PD7     PORTD7
 #endif
+#ifndef PH0
+#define PH0     PORTH0
+#define PH1     PORTH1
+#define PH2     PORTH2
+#define PH3     PORTH3
+#define PH4     PORTH4
+#define PH5     PORTH5
+#define PH6     PORTH6
+#define PH7     PORTH7
+#endif
 
 /* Chip Specific Pinouts */
 #if defined (__AVR_ATmega168__)  \
@@ -79,6 +89,26 @@
 
 /* Sanguino */
 #include "ATmega_xx4.h"
+
+#elif defined (__AVR_ATmega640__)  \
+   || defined (__AVR_ATmega1280__) \
+   || defined (__AVR_ATmega1281__) \
+   || defined (__AVR_ATmega2560__) \
+   || defined (__AVR_ATmega2561__)
+   
+/* Arduino Mega */
+#include "Arduino_Mega.h"
+
+#elif defined (__AVR_ATmega32U4__)
+
+/* Teensy 2.0 */
+#include "Teensy_xxU4.h"
+
+#elif defined (__AVR_AT90USB646__) \
+   || defined (__AVR_AT90USB1286__)
+
+/* Teensy++ 2.0 */
+#include "Teensypp_xxx6.h"
 
 #else
 #error "Unknown Chip!"
