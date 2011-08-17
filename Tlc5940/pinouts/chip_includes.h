@@ -22,7 +22,16 @@
 /** \file
     Includes the chip-specfic defaults and pin definitions. */
 
-#include <avr/io.h>
+/* For AVR */
+#if defined(__AVR__)
+    #include <avr/io.h>
+#endif
+
+/* For PIC32 */
+#if defined(__PIC32MX__)
+    #include <p32xxxx.h>    /* this gives all the CPU/hardware definitions */
+    #include <plib.h>       /* this gives the i/o definitions */
+#endif
 
 #ifndef PB0
 #define PB0     PORTB0
@@ -109,6 +118,11 @@
 
 /* Teensy++ 2.0 */
 #include "Teensypp_xxx6.h"
+
+#elif defined(__PIC32MX__)
+
+/* ChipKit */
+#include "pic32mx.h"
 
 #else
 #error "Unknown Chip!"
