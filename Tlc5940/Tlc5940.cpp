@@ -19,8 +19,18 @@
 /** \file
     Tlc5940 class functions. */
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
+/* For AVR */
+#if defined(__AVR__)
+    #include <avr/io.h>
+#endif
+
+/* For PIC32 */
+#if defined(__PIC32MX__)
+    #include <p32xxxx.h>    /* this gives all the CPU/hardware definitions */
+    #include <plib.h>       /* this gives the i/o definitions */
+#endif
+
+//#include <avr/interrupt.h>
 
 #include "tlc_config.h"
 #include "Tlc5940.h"
@@ -58,6 +68,7 @@ uint8_t tlc_GSData[NUM_TLCS * 24];
 static uint8_t firstGSInput;
 
 /** Interrupt called after an XLAT pulse to prevent more XLAT pulses. */
+/*
 ISR(TIMER1_OVF_vect)
 {
     disable_XLAT_pulses();
@@ -68,6 +79,7 @@ ISR(TIMER1_OVF_vect)
         tlc_onUpdateFinished();
     }
 }
+*/
 
 /** \defgroup ReqVPRG_ENABLED Functions that Require VPRG_ENABLED
     Functions that require VPRG_ENABLED == 1.
