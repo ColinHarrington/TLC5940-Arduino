@@ -1,4 +1,6 @@
 /*
+    See Tlc5940Mux/tlc5940mux_circuit_example.png for an example circuit.
+
     Analog 0-2 (PORTC) is hooked to a 3:8 line decoder (74LS138) which pull the
     Base of a PNP darlington (MPSA63) low through a 10k resistor for each row.
     +5V is connected to the Emitter of the PNP's, and all the anodes (+) of the
