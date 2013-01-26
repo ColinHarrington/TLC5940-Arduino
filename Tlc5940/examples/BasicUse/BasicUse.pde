@@ -4,15 +4,15 @@
     ARDUINO   13|-> SCLK (pin 25)           OUT1 |1     28| OUT channel 0
               12|                           OUT2 |2     27|-> GND (VPRG)
               11|-> SIN (pin 26)            OUT3 |3     26|-> SIN (pin 11)
-              10|                           OUT4 |4     25|-> SCLK (pin 13)
-               9|-> BLANK (pin 23)            .  |5     24|-> XLAT (pin 2)
-               8|                             .  |6     23|-> BLANK (pin 9)
+              10|-> BLANK (pin 23)          OUT4 |4     25|-> SCLK (pin 13)
+               9|-> XLAT (pin 24)             .  |5     24|-> XLAT (pin 9)
+               8|                             .  |6     23|-> BLANK (pin 10)
                7|                             .  |7     22|-> GND
                6|                             .  |8     21|-> VCC (+5V)
                5|                             .  |9     20|-> 2K Resistor -> GND
                4|                             .  |10    19|-> +5V (DCPRG)
                3|-> GSCLK (pin 18)            .  |11    18|-> GSCLK (pin 3)
-               2|-> XLAT (pin 24)             .  |12    17|-> SOUT
+               2|                             .  |12    17|-> SOUT
                1|                             .  |13    16|-> XERR
                0|                           OUT14|14    15| OUT channel 15
     ------------                                  --------
@@ -21,9 +21,9 @@
          (cathode) in OUT(0-15).
     -  +5V from Arduino -> TLC pin 21 and 19     (VCC and DCPRG)
     -  GND from Arduino -> TLC pin 22 and 27     (GND and VPRG)
-    -  digital 2        -> TLC pin 24            (XLAT)
     -  digital 3        -> TLC pin 18            (GSCLK)
-    -  digital 9        -> TLC pin 23            (BLANK)
+    -  digital 9        -> TLC pin 24            (XLAT)
+    -  digital 10       -> TLC pin 23            (BLANK)
     -  digital 11       -> TLC pin 26            (SIN)
     -  digital 13       -> TLC pin 25            (SCLK)
     -  The 2K resistor between TLC pin 20 and GND will let ~20mA through each

@@ -44,9 +44,9 @@
 #endif
 
 /** Enables the output of XLAT pulses */
-#define enable_XLAT_pulses()
+#define enable_XLAT_pulses()    TCCR1A = _BV(COM1A1) | _BV(COM1B1)
 /** Disables the output of XLAT pulses */
-#define disable_XLAT_pulses()
+#define disable_XLAT_pulses()   TCCR1A = _BV(COM1B1)
 
 extern volatile uint8_t tlc_needXLAT;
 extern volatile void (*tlc_onUpdateFinished)(void);

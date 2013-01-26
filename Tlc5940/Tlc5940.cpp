@@ -60,8 +60,7 @@ static uint8_t firstGSInput;
 /** Interrupt called after an XLAT pulse to prevent more XLAT pulses. */
 ISR(TIMER1_OVF_vect)
 {
-    // pulse XLAT, hopefully as soon after the BLANK pulse as possible.
-    pulse_pin(XLAT_PORT, XLAT_PIN);
+    disable_XLAT_pulses();
     clear_XLAT_interrupt();
     tlc_needXLAT = 0;
     if (tlc_onUpdateFinished) {
@@ -119,9 +118,10 @@ void Tlc5940::init(uint16_t initialValue)
     /* Timer Setup */
 
     /* Timer 1 - BLANK / XLAT */
-    TCCR1A = _BV(COM1A1);  // non inverting, output on OC1A, BLANK
+    TCCR1A = _BV(COM1B1);  // non inverting, output on OC1B, BLANK
     TCCR1B = _BV(WGM13);   // Phase/freq correct PWM, ICR1 top
-    OCR1A = 2;             // duty factor on BLANK
+    OCR1A = 1;             // duty factor on OC1A, XLAT is inside BLANK
+    OCR1B = 2;             // duty factor on BLANK (larger than OCR1A (XLAT))
     ICR1 = TLC_PWM_PERIOD; // see tlc_config.h
 
     /* Timer 2 - GSCLK */
